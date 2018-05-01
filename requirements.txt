@@ -1,0 +1,16 @@
+blinker==1.4
+click==6.7
+Flask==0.12.2
+flask-ldap3-login==0.9.13
+Flask-Login==0.4.1
+Flask-Principal==0.4.0
+Flask-PyMongo==0.5.1
+Flask-WTF==0.14.2
+itsdangerous==0.24
+Jinja2==2.10
+ldap3==2.4.1
+MarkupSafe==1.0
+pyasn1==0.4.2
+pymongo==3.6.1
+Werkzeug==0.14.1
+WTForms==2.1

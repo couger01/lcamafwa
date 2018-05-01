@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Calendar Events</h1>
+<div class="list-group">
+    {% for calendar_event in calendar_events %}
+    <a class="list-group-item list-group-item-action" href="{{ url_for('calendar_event',calendar_event['_id']) }}">{{ calendar_event.title }}</a>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Proposals</h1>
+<div class="list-group">
+    {% for proposal in proposals %}
+        <a class="list-group-item list-group-item-action" href="{{ url_for('proposal',proposal_id=proposal['_id']) }}">{{ proposal['newCourse']['name'] }} : {{ proposal['newCourse']['title'] }}</a>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>General Education Requirements</h1>
+<div class="list-group">
+    {% for ger in gers %}
+    <a class="list-group-item list-group-item-action" href="{{ url_for('ger',ger_id=ger['_id']) }}">{{ ger.title }}</a>
+    {% endfor %}
+</div>
+{% endblock %}

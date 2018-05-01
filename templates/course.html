@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ course.title }} <small class="text-muted">{{ course.name }}</small></h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <!-- <strong>Title</strong> --> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <a href="{{ url_for('courses') }}">Go Back</a>
+    {{ course.title }} {{ course.name }} {{ course.credit_hrs }} {{ course.capacity }} {{ course.gen_ed }} {{ course.desc }}
+    {{ course.dept }} {{ course.division }}
+    {% if form %}
+    <form method="post" action="{{ url_for('course_edit',course_id=course['_id']) }}">
+        {{ form.hidden_tag() }}
+        {{ form.title.label }} {{ form.title }}
+        {{ form.number.label }} {{ form.number }}
+        {{ form.credit_hrs.label }} {{ form.credit_hrs }}
+        {{ form.capacity.label }} {{ form.capacity }}
+        {{ form.gen_ed.label }} {{ form.gen_ed }}
+        {{ form.desc.label }} {{ form.desc }}
+        {{ form.dept.label }} {{ form.dept }}
+        {{ form.edit }}
+    </form>
+    {% endif %}
+{% endblock %}

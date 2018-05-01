@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
+    <a href="{{ url_for('depts') }}">Go Back</a>
+    {{ dept.name }} {{ dept.abbrev }} {{ dept.division }}
+{% endblock %}
