@@ -4,7 +4,9 @@ This is a Flask web application that creates a graphical user interface for the 
 
 ## Setup
 
-1. pip install requirements.txt
+1. python virtualenv --python=python3 <virtualenv>
+2. Source virtualenv
+1. pip install -r requirements.txt
 2. python lc_apc_mongo_web_app.py
 
 Some configurations may need to be corrected and those configurations can made in lc_apc_mongo_web_app.py.
