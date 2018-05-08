@@ -31,10 +31,17 @@
     <li class="list-group-item">{{ chair }}</li>
     {% endfor %}
     </ul>
+    <h2>Form</h2>
     {% if form %}
     <form method="POST" action="{{ url_for('user_edit',user_id=user['_id']) }}">
         {{ form.hidden_tag() }}
-        {{ form.dept.label }} {{ form.dept }} {{ form.chair.label }} {{ form.chair }} {{ form.edit }}
+        <div class="form-group">
+            {{ form.dept.label }} {{ form.dept(class_="form-control") }}
+        </div>
+        <div class="form-control">
+            {{ form.chair.label }} {{ form.chair(class_="form-control") }}
+        </div>
+         {{ form.edit(class_="btn btn-primary") }}
 </form>
     {% endif %}
 {% endblock %}

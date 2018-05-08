@@ -2,7 +2,7 @@ from flask import Flask,render_template, abort, request, redirect, url_for, curr
 from flask_pymongo import PyMongo
 from jinja2 import TemplateNotFound
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectMultipleField, SubmitField, TextAreaField, IntegerField, DateTimeField, RadioField
+from wtforms import StringField, SelectMultipleField, SubmitField, TextAreaField, IntegerField, DateTimeField, RadioField, SelectField
 from wtforms.validators import DataRequired
 from flask_wtf.csrf import CSRFProtect
 from flask_ldap3_login import LDAP3LoginManager
@@ -10,6 +10,7 @@ from flask_login import LoginManager, login_user, UserMixin, current_user, logou
 from flask_ldap3_login.forms import LDAPLoginForm
 from flask.ext.principal import Principal, Identity, AnonymousIdentity, \
      identity_changed, identity_loaded, UserNeed, RoleNeed
+import datetime
 
 class UserForm(FlaskForm):
     dept = SelectMultipleField('Departments',choices=[])
@@ -30,7 +31,7 @@ class CourseForm(FlaskForm):
     capacity = StringField('Capacity')
     gen_ed = SelectMultipleField('Gen Eds',choices=[])
     desc = TextAreaField('Description')
-    dept = SelectMultipleField('Departments',choices=[])
+    dept = SelectField('Departments',choices=[])
     edit = SubmitField('Edit')
 
     def __init__(self,*args, **kwargs):
@@ -39,7 +40,7 @@ class CourseForm(FlaskForm):
         FlaskForm.__init__(self, *args, **kwargs)
 
 class ProposalForm(FlaskForm):
-    owner = StringField('Owner')
+    owner = SelectField('Owner',choices=[])
     stage = IntegerField('Stage')
     staffing = TextAreaField('Staffing')
     rationale = TextAreaField('Rationale')
@@ -55,13 +56,17 @@ class ProposalForm(FlaskForm):
     def __init__(self,*args, **kwargs):
         self.instructors.kwargs['choices']= [(item['name'],item['name']) for item in mongo.db['users'].find()]
         self.terms.kwargs['choices'] = [(item, item) for item in ['FALL', 'SPRING', 'J_TERM', 'SUMMER SESSION I', 'SUMMER SESSION II']]
+        self.owner.kwargs['choices'] = [(item['name'], item['name']) for item in mongo.db['users'].find()]
         FlaskForm.__init__(self, *args, **kwargs)
 
 class DepartmentForm(FlaskForm):
     name = StringField("Name")
     abbrev = StringField("Abbreviation")
-    division = StringField("Division")
+    division = SelectField("Division",choices=[])
     edit = SubmitField("Edit")
+
+    def __init__(self,*args,**kwargs):
+        self.division.kwargs['choices'] = [(item['division'],item['division']) for item in mongo.db.depts.find().distinct()]
 
 class GerForm(FlaskForm):
     title = StringField("title")
@@ -236,7 +241,7 @@ def user_edit(user_id):
 
 @app.route('/courses/')
 def courses():
-    courses = mongo.db.courses.find({})
+    courses = mongo.db.courses.find({}).sort("name",1)
     try:
         return render_template('courses.html',courses=courses,form=CourseForm())
     except TemplateNotFound:
@@ -255,16 +260,21 @@ def course_edit(course_id):
     course = mongo.db.courses.find_one({'_id': course_id})
     form = CourseForm(request.form)
     if request.method == "POST":
-        mongo.db.courses.find_one_and_update({'_id': course['_id']},{'$set':{'title':form.title.data,'name':form.dept.data[0] + '-' + form.number.data,'credit_hrs':form.credit_hrs.data,'capacity':form.capacity.data,'gen_eds':[item for item in form.gen_ed.data],'desc':form.desc.data}})
+        mongo.db.courses.find_one_and_update({'_id': course['_id']},{'$set':{'title':form.title.data,'name':form.dept.data + '-' + form.number.data,'credit_hrs':form.credit_hrs.data,'capacity':form.capacity.data,'gen_eds':[item for item in form.gen_ed.data],'desc':form.desc.data,'dept':form.dept.data}})
         return redirect(url_for('course', course_id=course['_id']))
 
 @app.route('/courses/course/new',methods=['POST'])
 def course_new():
     form = CourseForm(request.form)
-    course = {'title':form.title.data,'name':form.dept.data[0] + '-' + form.number.data,'credit_hrs':form.credit_hrs.data,'capacity':form.capacity.data,'gen_eds':[item for item in form.gen_ed.data],'desc':form.desc.data}
+    course = {'title':form.title.data,'name':form.dept.data + '-' + form.number.data,'credit_hrs':form.credit_hrs.data,'capacity':form.capacity.data,'gen_eds':[item for item in form.gen_ed.data],'desc':form.desc.data,'dept':form.dept.data}
     if request.method == "POST":
         mongo.db.courses.insert_one(course)
         return redirect(url_for('courses'))
+
+@app.route('/courses/course/<ObjectId:course_id>/delete')
+def course_delete(course_id):
+    mongo.db.courses.delete_one({'_id':course_id})
+    return redirect(url_for('courses'))
 
 @app.route('/proposals/')
 def proposals():
@@ -278,7 +288,7 @@ def proposals():
 def proposal(proposal_id):
     proposal = mongo.db.proposals.find_one({'_id': proposal_id})
     try:
-        return render_template('proposal.html',proposal=proposal,form=ProposalForm())
+        return render_template('proposal.html',proposal=proposal,form=ProposalForm(owner=proposal['owner'],stage=proposal['stage'],staffing=proposal['staffing'],rationale=proposal['rationale'],impact=proposal['impact'],fees=proposal['fees'],est_enrollment=proposal['est_enrollment'],instructors=[item for item in proposal['instructors']],terms=[item for item in proposal['terms']]))
     except TemplateNotFound:
         abort(404)
 
@@ -286,6 +296,11 @@ def proposal(proposal_id):
 def proposal_edit(proposal_id):
     flash("Editing a proposal is not implemented yet.",'warning')
     return redirect(url_for('proposal',proposal_id=proposal_id))
+
+@app.route('/proposals/proposal/<ObjectId:proposal_id>/delete')
+def proposal_delete(proposal_id):
+    mongo.db.proposals.delete_one({'_id': proposal_id})
+    return redirect(url_for('proposals'))
 
 
 @app.route('/departments/')
@@ -300,18 +315,26 @@ def depts():
 def dept(dept_id):
     dept = mongo.db.depts.find_one({'_id': dept_id})
     try:
-        return render_template('department.html',dept=dept)
+        return render_template('department.html',dept=dept,form=DepartmentForm(name=dept['name'],abbrev=dept['abbrev'],division=dept['division']))
     except TemplateNotFound:
         abort(404)
 
-@app.route('/departments/dept/<ObjectId:dept_id>/edit')
+@app.route('/departments/dept/<ObjectId:dept_id>/edit',methods=['POST'])
 def dept_edit(dept_id):
     flash("Editing a department is not implemented yet.", 'warning')
-    return redirect(url_for('depts', dept_id=dept_id))
+    dept = mongo.db.depts.find_one({'_id': dept_id})
+    form = DepartmentForm(request.form)
+    mongo.db.depts.find_one_and_update({'_id':dept_id},{'$set':{'name':form.name.data,'abbrev':form.abbrev.data,'division':form.division.data}})
+    return redirect(url_for('dept', dept_id=dept_id))
 
 @app.route('/departments/dept/new')
 def dept_new():
     flash("Adding a new department is not implemented yet.", 'warning')
+    return redirect(url_for('depts'))
+
+@app.route('/departments/dept/<ObjectId:dept_id>/delete')
+def dept_delete(dept_id):
+    mongo.db.depts.delete_one({'_id':dept_id})
     return redirect(url_for('depts'))
 
 @app.route('/general-education-requirements/')
