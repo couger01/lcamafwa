@@ -6,17 +6,34 @@
             <a class="list-group-item list-group-item-action" href="{{ url_for('course',course_id=course['_id']) }}">{{ course.name }}</a>
         {% endfor %}
     </div>
+    <h2>New Course</h2>
     {% if form %}
     <form method="post" action="{{ url_for('course_new') }}">
         {{ form.hidden_tag() }}
-        {{ form.title.label }} {{ form.title }}
-        {{ form.dept.label }} {{ form.dept }}
-        {{ form.number.label }} {{ form.number }}
-        {{ form.credit_hrs.label }} {{ form.credit_hrs }}
-        {{ form.capacity.label }} {{ form.capacity }}
-        {{ form.gen_ed.label }} {{ form.gen_ed }}
-        {{ form.desc.label }} {{ form.desc }}
-        {{ form.edit.label }} {{ form.edit }}
+        <div class="form-group">
+            {{ form.title.label }} {{ form.title(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.dept.label }} {{ form.dept(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.number.label }} {{ form.number(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.credit_hrs.label }} {{ form.credit_hrs(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.capacity.label }} {{ form.capacity(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.gen_ed.label }} {{ form.gen_ed(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.desc.label }} {{ form.desc(class_="form-control") }}
+        </div>
+        {{ form.edit.label }} {{ form.edit(class_="btn btn-primary") }}
+
+
 
 
     </form>
