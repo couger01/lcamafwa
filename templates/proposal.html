@@ -1,33 +1,80 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <!-- <strong>Title</strong> --> {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-    <a href="{{ url_for('proposals') }}">Go Back</a>
-    {{ proposal.owner }} {{ proposal.stage }} {{ proposal.staffing }} {{ proposal.rationale }} {{ proposal.impact }} {{ proposal.date }} {{ proposal.action }} {{ proposal.fees }} {{ proposal.est_enrollment }} {{ proposal.instructors }} {{ proposal.comments }} {{ proposal.terms }}
-    {% if form %}
-    <form method="post" action="{{ url_for('proposal_edit',proposal_id=proposal['_id']) }}">
-        {{ form.hidden_tag() }}
-        {{ form.owner }}
-        {{ form.staffing }}
-        {{ form.rationale }}
-        {{ form.impact }}
-        {{ form.date }}
-        {{ form.action }}
-        {{ form.fees }}
-        {{ form.est_enrollment }}
-        {{ form.instructors }}
-        {{ form.terms }}
-        {{ form.edit }}
-    </form>
-    {% endif %}
+    <div class="row">
+        <div class="col-md">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <!-- <strong>Title</strong> --> {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <a href="{{ url_for('proposals') }}" class="btn btn-primary">Go Back</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+            <p>
+                {{ proposal.owner }} {{ proposal.stage }} {{ proposal.staffing }} {{ proposal.rationale }} {{ proposal.impact }} {{ proposal.date }} {{ proposal.action }} {{ proposal.fees }} {{ proposal.est_enrollment }} {{ proposal.instructors }} {{ proposal.comments }} {{ proposal.terms }}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Edit Proposed Course</h2>
+                    {% if form %}
+                    <form method="post" action="{{ url_for('proposal_edit',proposal_id=proposal['_id']) }}">
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-md">
+                                {{ form.owner.label }} {{ form.owner }}
+                            </div>
+                            <div class="col-md">
+                                {{ form.owner.label }} {{ form.staffing }}
+                            </div>
+                            <div class="col-md">
+                                {{ form.rationale.label }} {{ form.rationale }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md">
+                                {{form.impact.label }} {{ form.impact }}
+                            </div>
+                            <div class="col-md">
+                                {{ form.date.label }} {{ form.date }}
+                            </div>
+                            <div class="col-md">
+                                {{ form.action.label }} {{ form.action }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md">
+                                {{form.fees.label }} {{ form.fees }}
+                            </div>
+                            <div class="col-md">
+                                {{ form.est_enrollment.label }} {{ form.est_enrollment }}
+                            </div>
+                            <div class="col-md">
+                                {{form.instructors.label }} {{ form.instructors }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md">
+                                {{form.terms.label }} {{ form.terms }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md">
+                                {{ form.edit(class_="btn btn-primary") }}
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
 {% endblock %}
