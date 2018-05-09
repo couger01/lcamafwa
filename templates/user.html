@@ -1,47 +1,79 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{ user.name }} <small class="text-muted">{{ user.email }}</small></h1>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <!-- <strong>Title</strong> --> {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-<a href="{{ url_for('users') }}">Go Back</a>
-    <h2>Departments</h2>
-    <ul class="list-group">
-    {% for dept in user.dept %}
-    <li class="list-group-item">{{ dept }}</li>
-    {% endfor %}
-    </ul>
-    <h2>Divisions</h2>
-    <ul class="list-group">
-    {% for division in user.division %}
-    <li class="list-group-item">{{ division }}</li>
-    {% endfor %}
-    </ul>
-    <h2>Chairs</h2>
-    <ul class="list-group">
-    {% for chair in user.chairs %}
-    <li class="list-group-item">{{ chair }}</li>
-    {% endfor %}
-    </ul>
-    <h2>Form</h2>
-    {% if form %}
-    <form method="POST" action="{{ url_for('user_edit',user_id=user['_id']) }}">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.dept.label }} {{ form.dept(class_="form-control") }}
-        </div>
-        <div class="form-control">
-            {{ form.chair.label }} {{ form.chair(class_="form-control") }}
-        </div>
-         {{ form.edit(class_="btn btn-primary") }}
-</form>
-    {% endif %}
+    <div class="row">
+    	<div class="col-md">
+			<h1>{{ user.name }} <small class="text-muted">{{ user.email }}</small></h1>
+		    {% with messages = get_flashed_messages(with_categories=true) %}
+		    <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+			    {% if messages %}
+			        {% for category, message in messages %}
+			          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+			          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			          <!-- <strong>Title</strong> --> {{ message }}
+			          </div>
+			        {% endfor %}
+			    {% endif %}
+		    {% endwith %}
+		    <a href="{{ url_for('users') }}" class="btn btn-primary">Go Back</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md">
+			<div class="card">
+				<div class="card-body">
+				    <h2 class="card-title">Departments</h2>
+				    <ul class="list-group">
+					    {% for dept in user.dept %}
+						    <li class="list-group-item">{{ dept }}</li>
+					    {% endfor %}
+				    </ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-md">
+			<div class="card">
+				<div class="card-body">
+				    <h2 class="card-title">Divisions</h2>
+				    <ul class="list-group">
+					    {% for division in user.division %}
+						    <li class="list-group-item">{{ division }}</li>
+					    {% endfor %}
+				    </ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-md">
+			<div class="card">
+				<div class="card-body">
+				    <h2 class="card-title">Chairs</h2>
+				    <ul class="list-group">
+					    {% for chair in user.chairs %}
+						    <li class="list-group-item">{{ chair }}</li>
+					    {% endfor %}
+				    </ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md">
+			<div class="card">
+				<div class="card-body">
+				    <h2 class="card-title">Edit User</h2>
+				    {% if form %}
+					    <form method="POST" action="{{ url_for('user_edit',user_id=user['_id']) }}">
+					        {{ form.hidden_tag() }}
+					        <div class="form-group">
+					            {{ form.dept.label }} {{ form.dept(class_="form-control") }}
+					        </div>
+					        <div class="form-control">
+					            {{ form.chair.label }} {{ form.chair(class_="form-control") }}
+					        </div>
+					        {{ form.edit(class_="btn btn-primary") }}
+						</form>
+				    {% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}

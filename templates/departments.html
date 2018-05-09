@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Departments</h1>
-<div class="list-group">
-    {% for dept in depts %}
-        <a class="list-group-item list-group-item-action" href="{{ url_for('dept',dept_id=dept['_id']) }}">{{ dept.name }}</a>
-    {% endfor %}
-</div>
+	<div class="alert alert-primary" role="alert">
+		<h1>Departments</h1>
+	</div>
+	<div class="list-group">
+	    {% for dept in depts %}
+	        <a class="list-group-item list-group-item-action" href="{{ url_for('dept',dept_id=dept['_id']) }}">{{ dept.name }}</a>
+	    {% endfor %}
+	</div>
 {% endblock %}
